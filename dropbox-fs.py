@@ -74,7 +74,7 @@ class DropboxFs(llfuse.Operations):
         items = list(folder.folders.values()) + list(folder.files.values()) # todo: switch to ordereddict?
         for i,f in enumerate(items[off:]):
             self.check_inode(f)
-            yield (f.name.encode('latin-1'), f.attr(self), off+i+1)
+            yield (f.name.encode(), f.attr(self), off+i+1)
 
     def check_inode(self, f):
         if not 'inode' in f.__dict__:
@@ -150,7 +150,7 @@ def init_logging():
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
     log.addHandler(handler)
-    log.setLevel(logging.INFO)
+    log.setLevel(logging.WARN)
 
 if __name__ == '__main__':
     init_logging()
