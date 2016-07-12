@@ -11,12 +11,12 @@ class DropboxFs(llfuse.Operations):
         log.info('init')
         self.gid = os.getgid()
         self.uid = os.getuid()
-        self.access_root = stat.S_IRUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH # read+execute
-        self.access = stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH #read-only
-        self.file_mode = stat.S_IFREG | self.access
-        self.dir_mode = stat.S_IFDIR | self.access
+        read_access = stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH
+        execute_access = stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+        self.file_mode = stat.S_IFREG | read_access
+        self.dir_mode = stat.S_IFDIR | read_access | execute_access
         self.mount_time = int(time.time() * 1e9)
-        self.root_entry = self.construct_entry(llfuse.ROOT_INODE, stat.S_IFDIR | self.access_root, 1, self.mount_time)
+        self.root_entry = self.construct_entry(llfuse.ROOT_INODE, self.dir_mode, 1, self.mount_time)
         self.inodes = {llfuse.ROOT_INODE: root}
         self.inode = llfuse.ROOT_INODE
 
