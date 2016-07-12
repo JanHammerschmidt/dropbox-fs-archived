@@ -131,8 +131,36 @@ def load_data(filename = 'data.msgpack'):
         print(e)
         return False
 
+def init_logging():
+    formatter = logging.Formatter('%(asctime)s.%(msecs)03d %(threadName)s: '
+                                  '[%(name)s] %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    log.addHandler(handler)
+    log.setLevel(logging.INFO)
+
 if __name__ == '__main__':
+    init_logging()
     root = load_data()
     if root != False:
-        print('go')
+        name = 'dropbox-fs'
+        fuse_options = set(llfuse.default_options)
+        fuse_options.discard('nonempty')  # necessary for osxfuse
+        fuse_options.add('fsname=%s' % name)
+        fuse_options.add('volname=%s' % name)
+        # fuse_options.add('debug')
+        # fuse_options.discard('default_permissions')
+        # fuse_options.add('defer_permissions')
+
+        try:
+            llfuse.init(DropboxFs(root), mountpoint, fuse_options)
+        except Exception as e:
+            print(str(e))
+        else:
+            try:
+                llfuse.main(workers=1)
+            except:
+                llfuse.close()
+                raise
+            llfuse.close()
 
