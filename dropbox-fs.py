@@ -56,6 +56,14 @@ class DropboxFs(llfuse.Operations):
             log.warn('access to unknown inode %i during lookup' % parent_inode)
             raise llfuse.FUSEError(errno.ENOENT)
 
+    def opendir(self, inode, ctx=None):
+        log.info('opendir %i' % inode)
+        if not inode in self.inodes:
+            log.warn('access to unknown inode %i during opendir' % inode)
+        # if inode != llfuse.ROOT_INODE:
+        #     raise llfuse.FUSEError(errno.ENOENT)
+        return inode
+
     def readdir(self, inode, off): #todo
         log.info('readdir %i/%i' % (inode, off))
         try:
