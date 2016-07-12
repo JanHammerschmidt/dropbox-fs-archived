@@ -74,7 +74,7 @@ class DropboxFs(llfuse.Operations):
         items = list(folder.folders.values()) + list(folder.files.values()) # todo: switch to ordereddict?
         for i,f in enumerate(items[off:]):
             self.check_inode(f)
-            yield (f.name, f.attr(self), off+i+1)
+            yield (f.name.encode('latin-1'), f.attr(self), off+i+1)
 
     def check_inode(self, f):
         if not 'inode' in f.__dict__:
@@ -118,6 +118,7 @@ class Folder:
         return fs.construct_entry(self.inode, fs.dir_mode, 0, fs.mount_time)
 
     def lookup(self, fs, name):
+        name = name.decode()
         f = self.files.get(name) or self.folders.get(name)
         if f is None:
             raise llfuse.FUSEError(errno.ENOENT)
