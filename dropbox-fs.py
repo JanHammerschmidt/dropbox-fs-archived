@@ -73,7 +73,14 @@ class DropboxFs(llfuse.Operations):
             raise llfuse.FUSEError(errno.ENOENT)
         items = list(folder.folders.values()) + list(folder.files.values()) # todo: switch to ordereddict?
         for i,f in enumerate(items[off:]):
-            yield (f.name, f.attr(self), off+i+1) # todo: add inode entry?
+            self.check_inode(f)
+            yield (f.name, f.attr(self), off+i+1)
+
+    def check_inode(self, f):
+        if not 'inode' in f.__dict__:
+            self.inode += 1
+            f.inode = self.inode
+            self.inodes[self.inode] = f
 
     def statfs(self, ctx): #todo
         sfs = llfuse.StatvfsData()
@@ -114,10 +121,7 @@ class Folder:
         f = self.files.get(name) or self.folders.get(name)
         if f is None:
             raise llfuse.FUSEError(errno.ENOENT)
-        if not 'inode' in f.__dict__:
-            fs.inode += 1
-            f.inode = fs.inode
-            fs.inodes[fs.inode] = f
+        fs.check_inode(f)
         return f.attr(fs)
 
 def msgpack_unpack(code, data):
