@@ -163,6 +163,7 @@ if __name__ == '__main__':
         fuse_options.discard('nonempty')  # necessary for osxfuse
         fuse_options.add('fsname=%s' % name)
         fuse_options.add('volname=%s' % name)
+        fuse_options.add('ro')
         # fuse_options.add('debug')
         # fuse_options.discard('default_permissions')
         # fuse_options.add('defer_permissions')
