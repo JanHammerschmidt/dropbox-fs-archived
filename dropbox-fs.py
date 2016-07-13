@@ -1,7 +1,7 @@
 import msgpack, logging, os, stat, time, errno
 import llfuse
 
-mountpoint = 'dropbox-fs'
+mountpoint = '/Volumes/dropbox-fs'
 
 log = logging.getLogger() # get root Logger
 
