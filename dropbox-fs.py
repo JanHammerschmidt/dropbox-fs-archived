@@ -118,9 +118,11 @@ class Folder:
         return fs.construct_entry(self.inode, fs.dir_mode, 0, fs.mount_time)
 
     def lookup(self, fs, name):
-        name = name.decode()
-        f = self.files.get(name) or self.folders.get(name)
+        named = name.decode()
+        f = self.files.get(named) or self.folders.get(named)
         if f is None:
+            if not named.startswith('.'):
+                log.warn('unsuccessful lookup (%s => %s) in folder %s' % (name, named, self.name))
             raise llfuse.FUSEError(errno.ENOENT)
         fs.check_inode(f)
         return f.attr(fs)
