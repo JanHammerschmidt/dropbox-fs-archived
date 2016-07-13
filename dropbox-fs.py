@@ -1,4 +1,4 @@
-import msgpack, logging, os, stat, time, errno
+import msgpack, logging, os, stat, time, errno, unicodedata
 import llfuse
 
 mountpoint = '/Volumes/dropbox-fs'
@@ -118,7 +118,7 @@ class Folder:
         return fs.construct_entry(self.inode, fs.dir_mode, 0, fs.mount_time)
 
     def lookup(self, fs, name):
-        named = name.decode()
+        named = unicodedata.normalize('NFC', name.decode())
         f = self.files.get(named) or self.folders.get(named)
         if f is None:
             if not named.startswith('.'):
