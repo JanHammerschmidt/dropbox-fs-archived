@@ -156,6 +156,12 @@ def init_logging():
 
 if __name__ == '__main__':
     init_logging()
+    if os.path.exists(mountpoint):
+        log.warning('mountpoint %s already exists' % mountpoint)
+        created_mountpoint = False
+    else:
+        os.makedirs(mountpoint)
+        created_mountpoint = True
     root = load_data()
     if root != False:
         name = 'dropbox-fs'
@@ -179,4 +185,6 @@ if __name__ == '__main__':
                 llfuse.close()
                 raise
             llfuse.close()
+            if created_mountpoint:
+                os.rmdir(mountpoint)
 
